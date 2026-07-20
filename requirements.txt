@@ -1,0 +1,26 @@
+# Core dependencies for the BackTrend pipeline
+# (construction + API-based prediction + evaluation).
+requests
+pandas
+pyarrow
+numpy
+matplotlib
+scikit-learn
+tqdm
+python-dotenv
+openai
+bert-score
+
+# Optional — local RAG prediction (qwen3_8B_rag.py, qwen3_30B_rag.py):
+#   vllm
+#   llama-index
+#   llama-index-embeddings-huggingface
+#
+# Optional — agent prediction:
+#   vllm        (DR_Tulu_eval.py, Tongyi_eval.py)
+#   qwen-agent  (Tongyi_eval.py)
+#   plus the requirements of the upstream DR-Tulu / Tongyi-DeepResearch repos.
+#
+# Optional — local-embedding clustering in dedupe_candidates.py
+# (not needed for the default OpenRouter embedding provider):
+#   sentence-transformers

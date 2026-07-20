@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.ipynb_checkpoints/
+
+# Environments & secrets
+.env
+.venv/
+venv/
+env/
+
+# OS / editor
+.DS_Store
+
+# Logs & job dumps
+*.log
+slurm-*.out
+
+# ---------------------------------------------------------------------------
+# Generated data / results.
+# This repo ships code + docs + config only. Everything below is produced by
+# running the pipeline (construction -> prediction -> evaluation) and is not
+# tracked. Regenerate it locally instead of committing.
+# ---------------------------------------------------------------------------
+*.parquet
+
+# construction/
+construction/papers/
+construction/candidate_topics/
+construction/candidate_dedup/
+construction/candidate_matching/
+construction/candidate_frequency/
+construction/final_results/
+construction/final_results_threshold_compare/
+construction/experiments/
+construction/backup/
+construction/try/
+construction/logs/
+construction/candidate_extract_queue*.jsonl
+construction/candidate_extract_parallel_status.json
+construction/paper_incremental_*.json
+construction/paper_candidate_baseline_*.json
+
+# prediction/
+prediction/outputs*/
+prediction/logs/
+prediction/trash/
+prediction/backup/
+
+# evaluation/
+evaluation/outputs*/
+evaluation/results/
+evaluation/backup/

@@ -1,0 +1,246 @@
+{
+  "Artificial Intelligence of Things": {
+    "paraphrase": [
+      "Intelligent IoT",
+      "AIoT systems",
+      "AI-powered Internet of Things"
+    ]
+  },
+  "asynchronous federated learning": {
+    "paraphrase": [
+      "Async Federated Learning",
+      "AFL",
+      "Federated Learning with Asynchronous Updates",
+      "Asynchronous Federated Optimization",
+      "Asynchronous FL",
+      "async FL",
+      "asynchronous federated averaging",
+      "FedAsync",
+      "federated learning with stale updates",
+      "staleness-aware federated learning",
+      "semi-asynchronous federated learning",
+      "asynchronous edge federated learning"
+    ]
+  },
+  "attention mechanisms in CNN": {
+    "paraphrase": [
+      "Attention Mechanisms in CNN",
+      "Attention-based CNN",
+      "CNN with Attention",
+      "Attention-Enhanced CNN",
+      "Attention-Augmented CNN",
+      "Attention-Driven CNN",
+      "CNN Attention Models",
+      "convolutional neural networks with attention",
+      "attention convolutional neural networks",
+      "attention mechanisms for convolutional neural networks",
+      "self-attention in convolutional neural networks"
+    ]
+  },
+  "decentralized federated learning": {
+    "paraphrase": [
+      "DFL",
+      "Fully Decentralised Federated Learning",
+      "Decentralized FL",
+      "Serverless Federated Learning",
+      "Peer-to-Peer Federated Learning",
+      "fully decentralized federated learning",
+      "peer to peer federated learning",
+      "decentralized federated optimization",
+      "serverless FL",
+      "gossip-based federated learning"
+    ]
+  },
+  "epistemic AI": {
+    "paraphrase": [
+      "epistemic artificial intelligence",
+      "epistemology-aware AI",
+      "epistemology-informed AI",
+      "epistemically grounded AI",
+      "AI with epistemic capabilities",
+      "epistemic uncertainty deep learning",
+      "epistemic uncertainty machine learning",
+      "AI epistemic uncertainty",
+      "epistemic uncertainty artificial intelligence",
+      "epistemic responsibility AI",
+      "epistemic injustice artificial intelligence"
+    ]
+  },
+  "evolutionary Neural Architecture Search": {
+    "paraphrase": [
+      "Evolution-Based NAS",
+      "Evolutionary NAS",
+      "Evolutionary Network Architecture Search",
+      "evolutionary architecture search",
+      "evolution-based neural architecture search",
+      "neuroevolution architecture search"
+    ]
+  },
+  "explainable AI": {
+    "paraphrase": [
+      "XAI",
+      "Explainable Artificial Intelligence"
+    ]
+  },
+  "federated deep learning": {
+    "paraphrase": [
+      "Deep Federated Learning",
+      "federated deep neural networks",
+      "federated neural networks",
+      "deep learning with federated learning",
+      "federated training of deep neural networks",
+      "federated convolutional neural networks",
+      "federated deep model training"
+    ]
+  },
+  "federated machine learning": {
+    "paraphrase": [
+      "FML",
+      "Federated ML"
+    ]
+  },
+  "federated reinforcement learning": {
+    "paraphrase": [
+      "FRL",
+      "FedRL",
+      "Federated Learning-Based Reinforcement Learning",
+      "federated deep reinforcement learning",
+      "FedDRL"
+    ]
+  },
+  "human AI interface": {
+    "paraphrase": [
+      "HAI",
+      "human-AI interface",
+      "human AI interaction",
+      "AI user interface"
+    ]
+  },
+  "human centric AI": {
+    "paraphrase": [
+      "Human-Centered AI",
+      "User-Centric AI",
+      "Human-Oriented AI",
+      "human centered machine learning",
+      "human-centred artificial intelligence",
+      "human-centered artificial intelligence"
+    ]
+  },
+  "large language models": {
+    "paraphrase": [
+      "LLM"
+    ]
+  },
+  "machine unlearning": {
+    "paraphrase": [
+      "ML Unlearning",
+      "Model Unlearning",
+      "Forgetting in Machine Learning"
+    ]
+  },
+  "masked face recognition": {
+    "paraphrase": [
+      "Face Recognition with Masks",
+      "Face Recognition under Mask Occlusion",
+      "Face Recognition with Facial Masks",
+      "Mask-Aware Face Recognition",
+      "masked facial recognition",
+      "face recognition under masks",
+      "occluded face recognition with masks",
+      "partial face recognition under masks"
+    ]
+  },
+  "masked language model": {
+    "paraphrase": [
+      "MLM",
+      "Masked Language Modeling",
+      "masked LM",
+      "masked language modelling",
+      "masked token prediction",
+      "mask language modeling",
+      "MLM pretraining",
+      "denoising masked language modeling"
+    ]
+  },
+  "multimodal AI": {
+    "paraphrase": [
+      "Multimodal Artificial Intelligence",
+      "Multimodal Intelligence",
+      "multimodal machine learning",
+      "image text multimodal ai"
+    ]
+  },
+  "multimodal hate speech detection": {
+    "paraphrase": [
+      "Multimodal Hateful Content Detection",
+      "Multimodal Hate Detection",
+      "MHSD",
+      "image text hate speech detection"
+    ]
+  },
+  "privacy-preserving machine learning": {
+    "paraphrase": [
+      "PPML",
+      "secure machine learning",
+      "encrypted machine learning",
+      "differentially private machine learning",
+      "privacy preserving machine learning"
+    ]
+  },
+  "scientific machine learning": {
+    "paraphrase": [
+      "SciML",
+      "Scientific ML",
+      "AI for Science",
+      "machine learning for science"
+    ]
+  },
+  "self-supervised learning CNN": {
+    "paraphrase": [
+      "Self-Supervised Convolutional Neural Network",
+      "Self-Supervised Learning using CNNs",
+      "Self-Supervised CNN",
+      "self-supervised CNN pretraining",
+      "self-supervised convolutional networks",
+      "self-supervised convolutional neural networks"
+    ]
+  },
+  "tiny machine learning": {
+    "paraphrase": [
+      "TinyML",
+      "Tiny AI",
+      "tinyML systems",
+      "resource-constrained machine learning"
+    ]
+  },
+  "trustworthy AI": {
+    "paraphrase": [
+      "Trusted AI",
+      "Trustworthy Artificial Intelligence",
+      "trusted artificial intelligence",
+      "responsible AI",
+      "reliable AI",
+      "safe AI",
+      "accountable AI",
+      "transparent AI"
+    ]
+  },
+  "trustworthy machine learning": {
+    "paraphrase": [
+      "Trustworthy ML",
+      "Trusted Machine Learning",
+      "reliable machine learning",
+      "robust trustworthy machine learning"
+    ]
+  },
+  "vertical federated learning": {
+    "paraphrase": [
+      "VFL",
+      "Vertically Partitioned Federated Learning",
+      "Federated Learning on Vertically Partitioned Data",
+      "Federated Learning over Vertically Partitioned Data",
+      "vertical FL",
+      "federated learning with vertical data partitioning"
+    ]
+  }
+}

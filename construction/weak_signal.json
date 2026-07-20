@@ -1,0 +1,164 @@
+{
+  "Artificial Intelligence of Things": {
+    "problem": [
+      "IoT-blockchain security"
+    ]
+  },
+  "asynchronous federated learning": {
+    "problem": [
+      "convergence instability in asynchronous federated learning",
+      "model staleness in asynchronous federated learning"
+    ],
+    "solution": [
+      "staleness-aware aggregation in asynchronous federated learning"
+    ]
+  },
+  "attention mechanisms in CNN": {
+    "problem": [
+      "data-efficient vision transformers",
+      "global dependency modeling in image fusion networks",
+      "restricted receptive fields in window-based self-attention"
+    ],
+    "solution": [
+      "linear-complexity self-attention",
+      "sparse attention in vision transformers",
+      "large-kernel convolutions",
+      "locality-enhanced transformer architectures",
+      "hierarchical vision transformers"
+    ]
+  },
+  "decentralized federated learning": {
+    "problem": [
+      "negative transfer in federated learning"
+    ],
+    "solution": [
+      "malicious client detection in federated learning"
+    ]
+  },
+  "evolutionary Neural Architecture Search": {
+    "problem": [
+      "manual neural architecture design"
+    ]
+  },
+  "explainable AI": {
+    "problem": [
+      "XAI explanation quality assessment",
+      "post-hoc explainer disagreement"
+    ],
+    "solution": [
+      "perturbation-based explanation evaluation"
+    ]
+  },
+  "federated machine learning": {
+    "problem": [
+      "privacy-preserving intrusion detection",
+      "carbon footprint in federated learning",
+      "federated machine unlearning",
+      "federated multi-task learning"
+    ],
+    "solution": [
+      "federated model aggregation",
+      "prototype-based federated learning",
+      "contrastive learning in federated learning",
+      "sparse training in federated learning",
+      "swarm learning",
+      "federated bilevel optimization"
+    ]
+  },
+  "human AI interface": {
+    "problem": [
+      "automation bias in AI-assisted decision making"
+    ],
+    "solution": [
+      "uncertainty communication in AI systems"
+    ]
+  },
+  "human centric AI": {
+    "problem": [
+      "human-centered AI implementation gap"
+    ],
+    "solution": [
+      "AI governance and regulation"
+    ]
+  },
+  "large language models": {
+    "problem": [
+      "privacy leakage in NLP models",
+      "long-context understanding in large language models",
+      "LLM alignment with human feedback",
+      "machine-generated text detection",
+      "pre-trained language model compression"
+    ],
+    "solution": [
+      "retrieval-augmented language models",
+      "parameter-efficient tuning",
+      "LLM-guided task planning",
+      "post-training quantization for large language models",
+      "autoregressive language models",
+      "LLM-based automated program repair"
+    ]
+  },
+  "machine unlearning": {
+    "problem": [
+      "federated unlearning",
+      "graph unlearning"
+    ],
+    "solution": [
+      "influence-function-based unlearning",
+      "federated unlearning"
+    ]
+  },
+  "masked face recognition": {
+    "problem": [
+      "face mask type recognition"
+    ],
+    "solution": [
+      "self-supervised facial representation learning"
+    ]
+  },
+  "masked language model": {
+    "solution": [
+      "vision-language models",
+      "prompt tuning for pretrained language models",
+      "masked video modeling"
+    ]
+  },
+  "privacy-preserving machine learning": {
+    "problem": [
+      "machine unlearning"
+    ]
+  },
+  "scientific machine learning": {
+    "solution": [
+      "knowledge graph link prediction"
+    ]
+  },
+  "tiny machine learning": {
+    "problem": [
+      "TinyML deployment challenges"
+    ]
+  },
+  "trustworthy AI": {
+    "problem": [
+      "AI trust measurement",
+      "appropriate reliance on AI",
+      "AI trust calibration",
+      "ethical AI in chatbot systems"
+    ],
+    "solution": [
+      "open-access large language models",
+      "AI result visualization"
+    ]
+  },
+  "vertical federated learning": {
+    "problem": [
+      "straggler problem in vertical federated learning",
+      "privacy leakage in vertical federated learning",
+      "feature selection in vertical federated learning",
+      "unaligned data in vertical federated learning"
+    ],
+    "solution": [
+      "privacy-preserving federated learning"
+    ]
+  }
+}
