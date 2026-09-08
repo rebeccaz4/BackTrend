@@ -22,8 +22,8 @@ LLM settings (2, 4 & 5) use an OpenRouter endpoint with a neutral judge model
 Usage:
     python evaluation/run_all.py --settings 1 3             # BERTScore only (no API)
     python evaluation/run_all.py --settings 2 4             # LLM only
-    python evaluation/run_all.py --settings 1 2 3 4         # the four default settings
-    python evaluation/run_all.py --settings 5               # Coverage@10 (opt-in)
+    python evaluation/run_all.py                            # all five settings (default)
+    python evaluation/run_all.py --settings 5               # Coverage@10 only
     python evaluation/run_all.py --models gpt5.4 tongyi --settings 1 3
 """
 from __future__ import annotations
@@ -101,9 +101,9 @@ def resolve_provider(api_key_override: str | None,
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Run all evaluation settings.")
-    p.add_argument("--settings", nargs="+", type=int, choices=[1, 2, 3, 4, 5], default=[1, 2, 3, 4],
+    p.add_argument("--settings", nargs="+", type=int, choices=[1, 2, 3, 4, 5], default=[1, 2, 3, 4, 5],
                    help="1=set-BERTScore, 2=set-LLM, 3=signal-BERTScore, 4=signal-LLM, "
-                        "5=Coverage@K (opt-in; not part of the default set)")
+                        "5=Coverage@K (all five run by default)")
     p.add_argument("--models", nargs="*", default=None,
                    help="Models to evaluate (default: all in prediction/outputs/)")
     p.add_argument("--topics", nargs="*", default=None,

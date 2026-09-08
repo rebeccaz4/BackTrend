@@ -2,7 +2,7 @@
 
 ## Overview
 
-This folder evaluates model-predicted weak signals against the human-validated ground-truth weak signals across 5 settings (1-4 are the default set; 5 is opt-in):
+This folder evaluates model-predicted weak signals against the human-validated ground-truth weak signals across 5 settings, all of which run by default:
 
 | Setting | Name | Method |
 |---------|------|--------|
@@ -93,17 +93,17 @@ python evaluation/run_all.py --settings 1 3
 python evaluation/run_all.py --settings 2 4
 ```
 
-### All 4 default settings
+### All 5 settings (the default)
 ```bash
-python evaluation/run_all.py --settings 1 2 3 4
+python evaluation/run_all.py                    # equivalent to --settings 1 2 3 4 5
 ```
 
-### Setting 5 — Coverage@K (opt-in)
+### Setting 5 — Coverage@K
 ```bash
-python evaluation/run_all.py --settings 5                    # Coverage@10
+python evaluation/run_all.py --settings 5                    # Coverage@10 only
 python evaluation/run_all.py --settings 5 --coverage-k 5     # Coverage@5
 ```
-Setting 5 is **not** in the default `--settings` set; request it explicitly. Top-K is the first K entries of the model's own prediction list, which the prediction prompt asks the model to order from most to least confident. Results also report `coverage_full` (Coverage@inf, no truncation) so the effect of the top-K cut is visible; when a model produced ≤ K signals the two are identical and the second judging pass is skipped.
+Top-K is the first K entries of the model's own prediction list, which the prediction prompt asks the model to order from most to least confident. Results also report `coverage_full` (Coverage@inf, no truncation) so the effect of the top-K cut is visible; when a model produced ≤ K signals the two are identical and the second judging pass is skipped.
 
 ### Specific models only
 ```bash
@@ -123,7 +123,7 @@ python evaluation/run_all.py --settings 1 3 --directions problem
 
 ### Incremental continuation (default)
 ```bash
-python evaluation/run_all.py --settings 1 2 3 4
+python evaluation/run_all.py --settings 1 2 3 4 5
 ```
 `--skip-existing` is **on by default**: already-scored `(topic, direction)` entries in an existing output JSON are reused. Pass `--no-skip-existing` to recompute everything.
 
@@ -195,6 +195,6 @@ Model names are simply the directory names under `prediction/outputs/` (e.g. `gp
 - Default `--n-runs` is `3` for LLM settings (use more for lower-variance publication numbers). The judge is called with `temperature=1.0`, which is hardcoded and not exposed as a flag — this is the source of the run-to-run variance that `--n-runs` averages over.
 - Evaluation reads predictions from `prediction/outputs/` by default (`--prediction-root`). Run the prediction stage first; the directory must exist or the run fails immediately.
 - Settings 1 and 3 need no API key; the judge key is only required when setting 2, 4 or 5 is requested.
-- Setting 5 costs roughly one extra judge pass per `(topic, direction)` per run (two when the model produced more than K signals). Judge replies are capped via `JUDGE_MAX_TOKENS` (default 1024) so an uncapped request cannot reserve credit for the model's full output window.
+- Setting 5 runs by default and costs roughly one extra judge pass per `(topic, direction)` per run (two when the model produced more than K signals) — pass `--settings 1 2 3 4` to skip it. Judge replies are capped via `JUDGE_MAX_TOKENS` (default 1024) so an uncapped request cannot reserve credit for the model's full output window.
 - `run_all.py` auto-loads `.env` from `construction/`, the repo root, and `prediction/`.
 - Each output JSON is written when its (model, setting) pass completes, so finished model×setting files are preserved if a longer run stops midway and are reused on the next run (`--skip-existing`, on by default).

@@ -87,11 +87,11 @@ python qwen3_5_397b.py --output-dir ./outputs
 
 ### 3. Evaluation — score predictions against ground truth
 
-Evaluate predicted signals against `construction/weak_signal.json` across four default settings (set / signal level × BERTScore / LLM judge), plus an opt-in fifth setting — Coverage@K, a recall-only metric over the model's top-K ranked predictions. See [`evaluation/evaluation_guide.md`](evaluation/evaluation_guide.md).
+Evaluate predicted signals against `construction/weak_signal.json` across five settings: set / signal level × BERTScore / LLM judge, plus Coverage@K — a recall-only metric over the model's top-K ranked predictions. All five run by default. See [`evaluation/evaluation_guide.md`](evaluation/evaluation_guide.md).
 
 ```bash
-python evaluation/run_all.py --settings 1 2 3 4     # the four default settings
-python evaluation/run_all.py --settings 5           # Coverage@10 (opt-in)
+python evaluation/run_all.py                        # all five settings
+python evaluation/run_all.py --settings 1 2 3 4     # skip Coverage@K
 ```
 
 ## License
