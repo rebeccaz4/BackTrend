@@ -11,17 +11,19 @@ Output layout (one folder per model, one JSON per algorithm):
     evaluation/outputs/<model>/set_llm.json           # Setting 2
     evaluation/outputs/<model>/signal_bertscore.json  # Setting 3
     evaluation/outputs/<model>/signal_llm.json        # Setting 4
+    evaluation/outputs/<model>/coverage_at_10.json    # Setting 5
 
 Each JSON holds every (topic, direction) result. Combinations with no
 validated GT are recorded with status "no_gt" and skipped (not scored).
 
-LLM settings (2 & 4) use an OpenRouter endpoint with a neutral judge model
+LLM settings (2, 4 & 5) use an OpenRouter endpoint with a neutral judge model
 (none of the evaluated systems are Claude).
 
 Usage:
     python evaluation/run_all.py --settings 1 3             # BERTScore only (no API)
     python evaluation/run_all.py --settings 2 4             # LLM only
-    python evaluation/run_all.py --settings 1 2 3 4         # all settings
+    python evaluation/run_all.py --settings 1 2 3 4         # the four default settings
+    python evaluation/run_all.py --settings 5               # Coverage@10 (opt-in)
     python evaluation/run_all.py --models gpt5.4 tongyi --settings 1 3
 """
 from __future__ import annotations
@@ -49,8 +51,9 @@ REPO_ROOT = _EVAL_DIR.parent
 OUTPUTS_DIR = _EVAL_DIR / "outputs"
 DIRECTIONS = ("problem", "solution")
 
-SETTING_NAMES = {1: "set_bertscore", 2: "set_llm", 3: "signal_bertscore", 4: "signal_llm"}
-LLM_SETTINGS = {2, 4}
+SETTING_NAMES = {1: "set_bertscore", 2: "set_llm", 3: "signal_bertscore", 4: "signal_llm",
+                 5: "coverage_at_10"}
+LLM_SETTINGS = {2, 4, 5}
 
 # LLM judge endpoint (OpenAI-compatible chat completions).
 # Claude Opus 4.8 over OpenRouter is a neutral judge: none of the evaluated
@@ -98,8 +101,9 @@ def resolve_provider(api_key_override: str | None,
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Run all evaluation settings.")
-    p.add_argument("--settings", nargs="+", type=int, choices=[1, 2, 3, 4], default=[1, 2, 3, 4],
-                   help="1=set-BERTScore, 2=set-LLM, 3=signal-BERTScore, 4=signal-LLM")
+    p.add_argument("--settings", nargs="+", type=int, choices=[1, 2, 3, 4, 5], default=[1, 2, 3, 4],
+                   help="1=set-BERTScore, 2=set-LLM, 3=signal-BERTScore, 4=signal-LLM, "
+                        "5=Coverage@K (opt-in; not part of the default set)")
     p.add_argument("--models", nargs="*", default=None,
                    help="Models to evaluate (default: all in prediction/outputs/)")
     p.add_argument("--topics", nargs="*", default=None,
@@ -107,7 +111,7 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--directions", nargs="*", default=["problem", "solution"],
                    choices=["problem", "solution"])
     p.add_argument("--judge-model", default=None,
-                   help=f"LLM model for settings 2 & 4 (default: {DEFAULT_JUDGE_MODEL})")
+                   help=f"LLM model for settings 2, 4 & 5 (default: {DEFAULT_JUDGE_MODEL})")
     p.add_argument("--api-key", default=None,
                    help="Override the judge API key (default: $OPENROUTER_API_KEY)")
     p.add_argument("--base-url", default=None,
@@ -121,8 +125,10 @@ def parse_args() -> argparse.Namespace:
                    help="Directory to write per-model result JSONs into "
                         "(default: evaluation/outputs). Use a distinct dir per variant so "
                         "same-named models don't overwrite each other.")
+    p.add_argument("--coverage-k", type=int, default=10,
+                   help="K for setting 5 (Coverage@K / Recall@K); default 10")
     p.add_argument("--n-runs", type=int, default=3,
-                   help="Number of LLM judge runs for settings 2 & 4 (default: 3)")
+                   help="Number of LLM judge runs for settings 2, 4 & 5 (default: 3)")
     p.add_argument("--skip-existing", dest="skip_existing", action="store_true", default=True,
                    help="Reuse already-scored (topic, direction) entries from existing output JSON (default: enabled)")
     p.add_argument("--no-skip-existing", dest="skip_existing", action="store_false",
@@ -160,12 +166,14 @@ def _summarize(results: list[dict]) -> dict:
         "n_scored": len(scored),
         "n_no_gt": sum(1 for r in results if r.get("status") == "no_gt"),
     }
-    for metric in ("precision", "recall", "f1"):
+    for metric in ("precision", "recall", "f1", "coverage", "coverage_full"):
         vals = [r[metric] for r in scored if isinstance(r.get(metric), (int, float))]
         if vals:
             summary[f"{metric}_mean"] = round(statistics.mean(vals), 4)
             summary[f"{metric}_std"] = round(statistics.stdev(vals) if len(vals) > 1 else 0.0, 4)
-        else:
+        elif metric in ("precision", "recall", "f1"):
+            # Coverage keys only appear for setting 5; P/R/F1 keep their
+            # existing "always present, possibly null" shape.
             summary[f"{metric}_mean"] = None
             summary[f"{metric}_std"] = None
     return summary
@@ -197,6 +205,9 @@ def _empty_pred_metrics(setting_name: str) -> dict:
         return {"setting": setting_name,
                 "precision": 0.0, "manual_p": 0.0, "recall": 0.0, "manual_r": 0.0,
                 "f1": 0.0, "note": "empty_pred", "matched_pairs": []}
+    if setting_name.startswith("coverage_at_"):
+        return {"setting": setting_name, "coverage": 0.0, "coverage_full": 0.0,
+                "note": "empty_pred"}
     return {"setting": setting_name, "precision": 0.0, "recall": 0.0, "f1": 0.0, "note": "empty_pred"}
 
 
@@ -221,6 +232,12 @@ def score_item(setting: int, item, ctx: dict) -> dict:
             api_key=ctx["api_key"], base_url=ctx["base_url"], judge_model=ctx["judge_model"],
             user_agent=ctx["user_agent"], n_runs=ctx["n_runs"],
         )
+    if setting == 5:
+        return ctx["eval_coverage_at_k"](
+            gt, pred,
+            api_key=ctx["api_key"], base_url=ctx["base_url"], judge_model=ctx["judge_model"],
+            user_agent=ctx["user_agent"], n_runs=ctx["n_runs"], k=ctx["coverage_k"],
+        )
     raise ValueError(f"Unknown setting: {setting}")
 
 
@@ -242,7 +259,7 @@ def main() -> None:
     if need_llm and not api_key:
         raise SystemExit(
             "Error: no LLM judge API key. "
-            "Set OPENROUTER_API_KEY (or pass --api-key) for settings 2 and 4."
+            "Set OPENROUTER_API_KEY (or pass --api-key) for settings 2, 4 and 5."
         )
 
     ctx: dict = {
@@ -251,6 +268,7 @@ def main() -> None:
         "api_key": api_key,
         "base_url": base_url,
         "user_agent": args.user_agent,
+        "coverage_k": args.coverage_k,
     }
 
     # Lazy imports — only load heavy libs when needed
@@ -269,6 +287,10 @@ def main() -> None:
     if 4 in args.settings:
         from llm_signal_eval import eval_signal_llm
         ctx["eval_signal_llm"] = eval_signal_llm
+    if 5 in args.settings:
+        from coverage_eval import eval_coverage_at_k
+        SETTING_NAMES[5] = f"coverage_at_{args.coverage_k}"
+        ctx["eval_coverage_at_k"] = eval_coverage_at_k
 
     ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
 
@@ -345,8 +367,13 @@ def main() -> None:
                     }
                     results.append(record)
                     total_scored += 1
-                    print(f"    {item.topic_slug}/{item.direction}: "
-                          f"P={metrics.get('precision')} R={metrics.get('recall')} F1={metrics.get('f1')}")
+                    if "coverage" in metrics:
+                        print(f"    {item.topic_slug}/{item.direction}: "
+                              f"Coverage@{metrics.get('k')}={metrics.get('coverage')} "
+                              f"Coverage@inf={metrics.get('coverage_full')}")
+                    else:
+                        print(f"    {item.topic_slug}/{item.direction}: "
+                              f"P={metrics.get('precision')} R={metrics.get('recall')} F1={metrics.get('f1')}")
                 except Exception as exc:
                     errors += 1
                     print(f"    {item.topic_slug}/{item.direction}: ERROR: {exc}")
@@ -366,7 +393,8 @@ def main() -> None:
                 shown_path = out_path  # outputs dir outside the repo
             print(f"    -> {shown_path}  "
                   f"(scored={summ['n_scored']}, no_gt={summ['n_no_gt']}, "
-                  f"P={summ['precision_mean']} R={summ['recall_mean']} F1={summ['f1_mean']})")
+                  f"P={summ.get('precision_mean')} R={summ.get('recall_mean')} "
+                  f"F1={summ.get('f1_mean')})")
 
     print(f"\n{'='*64}")
     print(f"Done. Scored: {total_scored}  Reused: {total_skipped}  no_gt: {total_no_gt}  Errors: {errors}")

@@ -18,7 +18,7 @@ BackTrend/
 ├── prediction/            # LLM / agentic weak-signal predictions
 │   ├── *.py               #   one script per model/method
 │   └── prediction_guide.md
-├── evaluation/            # Four-way evaluation of predictions vs ground truth
+├── evaluation/            # Five-way evaluation of predictions vs ground truth
 │   ├── run_all.py         #   main runner
 │   └── evaluation_guide.md
 ├── requirements.txt       # Python dependencies
@@ -87,10 +87,11 @@ python qwen3_5_397b.py --output-dir ./outputs
 
 ### 3. Evaluation — score predictions against ground truth
 
-Evaluate predicted signals against `construction/weak_signal.json` across four settings (set / signal level × BERTScore / LLM judge). See [`evaluation/evaluation_guide.md`](evaluation/evaluation_guide.md).
+Evaluate predicted signals against `construction/weak_signal.json` across four default settings (set / signal level × BERTScore / LLM judge), plus an opt-in fifth setting — Coverage@K, a recall-only metric over the model's top-K ranked predictions. See [`evaluation/evaluation_guide.md`](evaluation/evaluation_guide.md).
 
 ```bash
-python evaluation/run_all.py --settings 1 2 3 4
+python evaluation/run_all.py --settings 1 2 3 4     # the four default settings
+python evaluation/run_all.py --settings 5           # Coverage@10 (opt-in)
 ```
 
 ## License

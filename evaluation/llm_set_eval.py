@@ -21,6 +21,7 @@ Runs N times and returns mean ± std, keeping every run's pairs.
 from __future__ import annotations
 
 import json
+import os
 import re
 import statistics
 import time
@@ -37,6 +38,11 @@ if str(_EVAL_DIR) not in sys.path:
     sys.path.insert(0, str(_EVAL_DIR))
 
 from prompt import SYSTEM_PROMPT, build_set_prompt  # noqa: E402
+
+# Cap the judge's reply: it is a compact JSON object of scores and matched
+# pairs, but an uncapped request makes the provider reserve credit for the
+# model's full output window.
+SET_JUDGE_MAX_TOKENS = int(os.getenv("SET_JUDGE_MAX_TOKENS", "1536"))
 
 
 def _safe_json(text: str) -> dict | None:
@@ -97,6 +103,7 @@ def _run_once(
         attempt += 1
         try:
             resp = client.chat.completions.create(
+                max_tokens=SET_JUDGE_MAX_TOKENS,
                 model=model,
                 messages=[
                     {"role": "system", "content": SYSTEM_PROMPT},

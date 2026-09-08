@@ -55,7 +55,8 @@ Specificity guidance:
 
 Requirements:
 - Return ONLY valid JSON, no markdown fences, no explanation.
-- Output a JSON object with a "weak_signals" array, which may be empty.
+- Output a JSON object with a "weak_signals" array. Order the "weak_signals" array from most to least confident: the array order is your ranking, strongest first.
+- Output at least 10 weak signals unless you genuinely cannot name that many.
 - Each weak signal must have exactly these fields: "signal", "what_it_was", "why_weak_signal".
 - Each weak signal must be explicitly tied to the prediction window [{year_range}].
 - "what_it_was" must include the year or year range within [{year_range}].
@@ -110,7 +111,8 @@ Specificity guidance:
 
 Requirements:
 - Return ONLY valid JSON, no markdown fences, no explanation.
-- Output a JSON object with a "weak_signals" array, which may be empty.
+- Output a JSON object with a "weak_signals" array. Order the "weak_signals" array from most to least confident: the array order is your ranking, strongest first.
+- Output at least 10 weak signals unless you genuinely cannot name that many.
 - Each weak signal must have exactly these fields: "signal", "what_it_was", "why_weak_signal".
 - Each weak signal must be explicitly tied to the prediction window [{year_range}].
 - "what_it_was" must include the year or year range within [{year_range}].

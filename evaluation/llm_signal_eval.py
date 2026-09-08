@@ -17,6 +17,7 @@ from __future__ import annotations
 import asyncio
 import json
 import math
+import os
 import re
 import statistics
 import sys
@@ -35,6 +36,7 @@ from metrics import compute_metrics                                             
 
 DEFAULT_BATCH_SIZE = 5
 DEFAULT_N_WORKERS  = 8
+JUDGE_MAX_TOKENS   = int(os.getenv("JUDGE_MAX_TOKENS", "1024"))
 
 
 def _safe_json(text: str) -> dict | None:
@@ -68,6 +70,11 @@ async def _judge_batch(
             try:
                 resp = await client.chat.completions.create(
                     model=model,
+                    # The reply is a short JSON array of 0/1, one per candidate
+                    # in the batch. Without a cap the provider reserves credit
+                    # for the model's full output window (65k tokens), which is
+                    # enough to exhaust an API balance mid-run.
+                    max_tokens=JUDGE_MAX_TOKENS,
                     messages=[
                         {"role": "system", "content": SYSTEM_PROMPT},
                         {"role": "user",   "content": build_pairwise_prompt(reference, candidates)},

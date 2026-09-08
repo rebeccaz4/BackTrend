@@ -2,7 +2,7 @@
 
 ## Overview
 
-This folder evaluates model-predicted weak signals against the human-validated ground-truth weak signals across 4 settings:
+This folder evaluates model-predicted weak signals against the human-validated ground-truth weak signals across 5 settings (1-4 are the default set; 5 is opt-in):
 
 | Setting | Name | Method |
 |---------|------|--------|
@@ -10,6 +10,7 @@ This folder evaluates model-predicted weak signals against the human-validated g
 | 2 | Set-level LLM | Give both sets to an LLM judge → P/R recomputed from the matched pairs it returns → F1 |
 | 3 | Signal-level BERTScore | Pairwise BERTScore F1 matrix → greedy max aggregation |
 | 4 | Signal-level LLM | Per-signal binary LLM judgment, run in both directions → count-based P/R |
+| 5 | Coverage@K | Per-GT-signal binary LLM judgment against the model's **top-K** predictions → recall-only |
 
 All evaluation is computed within a single `(topic, direction)` pair.
 
@@ -17,6 +18,7 @@ Two details that matter when comparing numbers:
 
 - **Setting 2** asks the judge for `precision`, `recall` and `matched_pairs`, but only uses the returned floats as a sanity check; the reported precision and recall are recomputed from `matched_pairs` (matched ground-truth / predicted items over set size), so they are always consistent with the evidence.
 - **Setting 4** issues two judgments per run — candidates against references for precision, and references against candidates for recall.
+- **Setting 5** reuses exactly the recall side of setting 4 — same judge, same prompt, same matching criterion, same `--n-runs` — but scores only the first `--coverage-k` predictions and drops the precision term. The leniency comes from not penalising extra predictions, not from relaxing what counts as a match, so it is directly comparable to setting 4's recall.
 
 **Aggregation.** F1 is computed per `(topic, direction)` pair, and the reported `f1_mean` is the plain mean of those per-pair F1 values — it is *not* recomputed from the mean precision and mean recall, so `f1_mean != 2PR/(P+R)` in general. For LLM settings the per-pair value is itself the mean over `--n-runs` judge runs. `*_std` is the sample standard deviation across pairs.
 
@@ -30,6 +32,7 @@ evaluation/
 ├── bertscore_eval.py    # Settings 1 and 3
 ├── llm_set_eval.py      # Setting 2
 ├── llm_signal_eval.py   # Setting 4
+├── coverage_eval.py     # Setting 5
 ├── prompt.py            # Shared LLM-judge prompt templates
 ├── metrics.py           # Metric aggregation helpers
 ├── run_all.py           # Main runner (use this)
@@ -90,10 +93,17 @@ python evaluation/run_all.py --settings 1 3
 python evaluation/run_all.py --settings 2 4
 ```
 
-### All 4 settings
+### All 4 default settings
 ```bash
 python evaluation/run_all.py --settings 1 2 3 4
 ```
+
+### Setting 5 — Coverage@K (opt-in)
+```bash
+python evaluation/run_all.py --settings 5                    # Coverage@10
+python evaluation/run_all.py --settings 5 --coverage-k 5     # Coverage@5
+```
+Setting 5 is **not** in the default `--settings` set; request it explicitly. Top-K is the first K entries of the model's own prediction list, which the prediction prompt asks the model to order from most to least confident. Results also report `coverage_full` (Coverage@inf, no truncation) so the effect of the top-K cut is visible; when a model produced ≤ K signals the two are identical and the second judging pass is skipped.
 
 ### Specific models only
 ```bash
@@ -138,6 +148,7 @@ evaluation/outputs/<model>/set_bertscore.json     # Setting 1
 evaluation/outputs/<model>/set_llm.json           # Setting 2
 evaluation/outputs/<model>/signal_bertscore.json  # Setting 3
 evaluation/outputs/<model>/signal_llm.json        # Setting 4
+evaluation/outputs/<model>/coverage_at_10.json    # Setting 5 (name follows --coverage-k)
 ```
 
 Each file holds every `(topic, direction)` result:
@@ -159,7 +170,8 @@ Each file holds every `(topic, direction)` result:
 
 - `status` is `scored`, `no_gt` (no validated GT for that topic/direction — not scored), or `error`. With the shipped ground truth, 30 of the 50 `(topic, direction)` pairs are `scored` and the other 20 are `no_gt`.
 - A pair that has ground truth but for which the model predicted nothing is still `scored`, with all-zero metrics and an extra `"note": "empty_pred"` field, and it *is* included in the means.
-- For LLM settings (2 & 4), metrics are averaged over `--n-runs` judge runs.
+- For LLM settings (2, 4 & 5), metrics are averaged over `--n-runs` judge runs.
+- Setting 5 records `coverage` / `coverage_full` (with `_std`) instead of `precision`/`recall`/`f1`, plus `k`, `truncated`, and `gt_hits_across_runs` (per-GT-signal hit count across runs, for auditing which references stay missed).
 - Mean P/R/F1 is printed after each (model, setting) completes, followed by a final counts summary.
 
 ---
@@ -182,6 +194,7 @@ Model names are simply the directory names under `prediction/outputs/` (e.g. `gp
 - **LLM settings** use the OpenRouter endpoint (`OPENROUTER_API_KEY`). Requests use `User-Agent: Mozilla/5.0`.
 - Default `--n-runs` is `3` for LLM settings (use more for lower-variance publication numbers). The judge is called with `temperature=1.0`, which is hardcoded and not exposed as a flag — this is the source of the run-to-run variance that `--n-runs` averages over.
 - Evaluation reads predictions from `prediction/outputs/` by default (`--prediction-root`). Run the prediction stage first; the directory must exist or the run fails immediately.
-- Settings 1 and 3 need no API key; the judge key is only required when setting 2 or 4 is requested.
+- Settings 1 and 3 need no API key; the judge key is only required when setting 2, 4 or 5 is requested.
+- Setting 5 costs roughly one extra judge pass per `(topic, direction)` per run (two when the model produced more than K signals). Judge replies are capped via `JUDGE_MAX_TOKENS` (default 1024) so an uncapped request cannot reserve credit for the model's full output window.
 - `run_all.py` auto-loads `.env` from `construction/`, the repo root, and `prediction/`.
 - Each output JSON is written when its (model, setting) pass completes, so finished model×setting files are preserved if a longer run stops midway and are reused on the next run (`--skip-existing`, on by default).
